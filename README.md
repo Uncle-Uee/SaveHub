@@ -1,5 +1,7 @@
 # SaveHub
 
+[![Support SaveHub](https://img.shields.io/badge/%E2%9D%A4-Support%20SaveHub-ff5f5f)](https://pay.yoco.com/savehub)
+
 **SaveHub** is a generalized .NET API (with a CLI) for uploading emulator
 **memory cards** and **save states** to an online storage backend so they can be
 shared and re-downloaded. It targets **GitHub** today and is designed so other
