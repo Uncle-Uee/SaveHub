@@ -1,0 +1,32 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+
+# OIDC token exchange for NuGet Trusted Publishing (no long-lived API key).
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Pack
+        run: |
+          VER="${GITHUB_REF_NAME#v}"
+          for p in Core Hosting GitHub Supabase GoogleDrive; do
+            dotnet pack "src/SaveHub.$p/SaveHub.$p.csproj" -c Release -p:Version="$VER" -o "${{ runner.temp }}/nupkg"
+          done
+      - name: NuGet login (Trusted Publishing / OIDC)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+      - name: Push to NuGet.org
+        run: dotnet nuget push "${{ runner.temp }}/nupkg/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

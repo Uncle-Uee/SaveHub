@@ -1,0 +1,57 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">SaveHub</title>
+  <desc id="desc">A floppy disk with an upward arrow, representing saving game data to the cloud.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.25" r="0.9">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
+      <stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="disk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#E2E8F0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#glow)"/>
+
+  <!-- Floppy disk body with classic cut top-right corner -->
+  <path d="M 300 332
+           Q 300 300 332 300
+           L 636 300
+           L 724 388
+           L 724 692
+           Q 724 724 692 724
+           L 332 724
+           Q 300 724 300 692
+           Z"
+        fill="url(#disk)"/>
+
+  <!-- Metal shutter with window -->
+  <rect x="372" y="300" width="232" height="130" rx="10" fill="#CBD5E1"/>
+  <rect x="402" y="320" width="70" height="90" rx="8" fill="#64748B"/>
+
+  <!-- Label -->
+  <rect x="352" y="470" width="320" height="224" rx="20" fill="#FFFFFF"/>
+
+  <!-- Upload / save arrow -->
+  <path d="M 512 506
+           L 588 590
+           L 550 590
+           L 550 664
+           L 474 664
+           L 474 590
+           L 436 590
+           Z"
+        fill="url(#accent)"/>
+</svg>

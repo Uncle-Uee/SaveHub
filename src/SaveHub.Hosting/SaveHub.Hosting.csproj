@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SaveHub.Core\SaveHub.Core.csproj" />
+    <ProjectReference Include="..\SaveHub.GitHub\SaveHub.GitHub.csproj" />
+    <ProjectReference Include="..\SaveHub.Supabase\SaveHub.Supabase.csproj" />
+    <ProjectReference Include="..\SaveHub.GoogleDrive\SaveHub.GoogleDrive.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

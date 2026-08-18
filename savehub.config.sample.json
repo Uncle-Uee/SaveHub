@@ -1,0 +1,26 @@
+{
+  "activeProvider": "github",
+  "providers": {
+    "github": {
+      "owner": "Uncle-Uee",
+      "repository": "Emu-Saves-Backup",
+      "branch": "",
+      "tokenEnvironmentVariable": "SAVEHUB_GITHUB_TOKEN",
+      "autoMerge": false,
+      "committerName": null,
+      "committerEmail": null
+    },
+    "supabase": {
+      "url": "https://YOUR-PROJECT.supabase.co",
+      "bucket": "saves",
+      "apiKeyEnvironmentVariable": "SAVEHUB_SUPABASE_KEY",
+      "isOwner": true
+    },
+    "googledrive": {
+      "rootFolderName": "SaveHub",
+      "clientId": "xxxxxxxx.apps.googleusercontent.com",
+      "clientSecretEnvironmentVariable": "SAVEHUB_GDRIVE_CLIENT_SECRET",
+      "isOwner": true
+    }
+  }
+}

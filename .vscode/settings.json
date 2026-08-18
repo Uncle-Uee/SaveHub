@@ -1,0 +1,12 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^dotnet --version; dotnet --list-sdks$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "dotnet new": true,
+        "dotnet sln": true,
+        "dotnet add": true,
+        "dotnet build": true
+    }
+}
