@@ -1,4 +1,6 @@
+using System.Net;
 using System.Text;
+using Google;
 using Google.Apis.Download;
 using Google.Apis.Drive.v3;
 using SaveHub.Core.Abstractions;
@@ -305,12 +307,17 @@ public sealed class GoogleDriveSaveStorageProvider : ISaveStorageProvider
     // app created at the Drive root (found or created). With drive.file the app only sees its own files.
     private async Task<string?> GetRootFolderIdAsync(bool create, CancellationToken ct)
     {
-        if (!string.IsNullOrWhiteSpace(_settings.RootFolderId))
-        {
-            return _settings.RootFolderId;
-        }
         if (_rootId is not null)
         {
+            return _rootId;
+        }
+
+        // Honor an explicit id only while it still resolves; a deleted or foreign folder (drive.file
+        // cannot see folders this app did not create) would otherwise fail every request.
+        if (!string.IsNullOrWhiteSpace(_settings.RootFolderId) &&
+            await FolderExistsAsync(_settings.RootFolderId, ct).ConfigureAwait(false))
+        {
+            _rootId = _settings.RootFolderId;
             return _rootId;
         }
 
@@ -326,6 +333,22 @@ public sealed class GoogleDriveSaveStorageProvider : ISaveStorageProvider
             _rootId = await CreateFolderAsync("root", name, ct).ConfigureAwait(false);
         }
         return _rootId;
+    }
+
+    // Whether a folder id still resolves for this app (false when deleted, trashed, or inaccessible).
+    private async Task<bool> FolderExistsAsync(string folderId, CancellationToken ct)
+    {
+        try
+        {
+            FilesResource.GetRequest get = _drive.Files.Get(folderId);
+            get.Fields = "id,trashed";
+            DriveData.File file = await get.ExecuteAsync(ct).ConfigureAwait(false);
+            return file.Trashed != true;
+        }
+        catch (GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.NotFound)
+        {
+            return false;
+        }
     }
 
     private static string Escape(string value)

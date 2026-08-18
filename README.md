@@ -132,7 +132,7 @@ dotnet build
 Configure your GitHub connection (interactive prompts, or pass options):
 
 ```powershell
-dotnet run --project src/SaveHub.Cli -- config github --owner Uncle-Uee --repo Emu-Saves-Backup
+dotnet run --project src/SaveHub.Cli -- config github --owner your-name --repo game-saves
 ```
 
 Provide your token via environment variable (recommended):
@@ -298,8 +298,8 @@ using SaveHub.GitHub;
 
 var settings = new GitHubProviderSettings
 {
-    Owner = "Uncle-Uee",
-    Repository = "Emu-Saves-Backup",
+    Owner = "your-name",
+    Repository = "game-saves",
     // Branch = "" -> use repo default
     // Token via env var SAVEHUB_GITHUB_TOKEN, or set settings.Token
     AutoMerge = false,
@@ -355,8 +355,8 @@ code. A sample is in [savehub.config.sample.json](savehub.config.sample.json):
   "activeProvider": "github",
   "providers": {
     "github": {
-      "owner": "Uncle-Uee",
-      "repository": "Emu-Saves-Backup",
+      "owner": "your-name",
+      "repository": "game-saves",
       "branch": "",
       "tokenEnvironmentVariable": "SAVEHUB_GITHUB_TOKEN",
       "autoMerge": false
@@ -387,7 +387,7 @@ dotnet run --project src/SaveHub.Cli -- config use github|supabase|googledrive
 ### GitHub
 
 ```powershell
-dotnet run --project src/SaveHub.Cli -- config github --owner Uncle-Uee --repo Emu-Saves-Backup
+dotnet run --project src/SaveHub.Cli -- config github --owner your-name --repo game-saves
 $env:SAVEHUB_GITHUB_TOKEN = "ghp_xxx"
 ```
 Uploads are pull requests; auto-merge for owners/contributors. See the token
@@ -431,14 +431,14 @@ dotnet run --project src/SaveHub.Cli -- config google-login   # opens the browse
 ## GitHub token & permissions
 
 SaveHub needs a **GitHub personal access token (PAT)** to push a branch and open a
-pull request on your `Uncle-Uee/Emu-Saves-Backup` repository.
+pull request on your `your-name/game-saves` repository.
 
 ### 1. Create the token
 
 GitHub → **Settings** → **Developer settings** → **Personal access tokens**:
 
-- **Fine-grained token** (recommended): set *Resource owner* to `Uncle-Uee`, limit
-  it to the `Emu-Saves-Backup` repository, and grant these repository permissions:
+- **Fine-grained token** (recommended): set *Resource owner* to `your-name`, limit
+  it to the `game-saves` repository, and grant these repository permissions:
   - *Contents*: **Read and write**
   - *Pull requests*: **Read and write**
 - **Classic token** (simpler): select the `repo` scope (or `public_repo` since the
