@@ -26,7 +26,6 @@ to your repository.
   - [Requirements](#requirements)
   - [Quick start (CLI)](#quick-start-cli)
     - [CLI command reference](#cli-command-reference)
-  - [Desktop app (Windows)](#desktop-app-windows)
   - [Adding a save for a new / unsupported platform](#adding-a-save-for-a-new--unsupported-platform)
     - [Example: a PS1 memory card for *Oddworld: Abe's Oddysee*](#example-a-ps1-memory-card-for-oddworld-abes-oddysee)
   - [Title IDs (game id / folder name)](#title-ids-game-id--folder-name)
@@ -62,7 +61,7 @@ to your repository.
 - **Automatic title id**: the game serial is read from PS1/PS2 memory cards; Nintendo
   saves use the file name as the folder. You can always override with `--game`.
 - **Automatic console detection**: PS1 vs PS2 memory cards are recognised from the
-  card image itself, so the desktop app selects the right console for you.
+  card image itself, so SaveHub selects the right console for you.
 - **Automatic game name**: the title is read from PS2 (`icon.sys`) / PS1 memory
   cards and from `PARAM.SFO` (`TITLE`) on PS3+, so the Game Name field is
   pre-filled where possible.
@@ -108,7 +107,6 @@ A drop-in README you can place in your save repository is provided at
 | `SaveHub.GoogleDrive` | Google Drive provider (OAuth browser sign-in). |
 | `SaveHub.Hosting` | Aggregates all providers; builds a client from config (`SaveHubHost`). |
 | `SaveHub.Cli` | Cross-platform command-line frontend (`savehub`). |
-| `SaveHub.WinForms` | Windows desktop frontend (Upload / Download / Edit / Settings). |
 
 ## Requirements
 
@@ -195,46 +193,6 @@ dotnet run --project src/SaveHub.Cli -- info
 
 All commands accept `--config <path>` to use a specific config file.
 
-## Desktop app (Windows)
-
-`SaveHub.WinForms` is a Windows desktop frontend (fixed 800×800 window) with five
-tabs:
-
-- **Settings** — choose the **provider** (GitHub / Supabase / Google Drive), fill in
-  its fields, and **Test Connection**. For Google Drive, click **Sign in with
-  Google** (opens the browser; the session lasts ~2.5 hours).
-- **Upload** — pick a **Device Type** from the per-manufacturer dropdowns
-  (**Nintendo**, **Sony**, **Microsoft**, **Sega**), a **Save Type** (Memory Card /
-  Save State / Folder), **Browse** for
-  the file(s) or folder, optionally **Select Icon**, enter a description
-  (≤ 256 chars). PS1/PS2 memory cards auto-select the console and pre-fill the
-  game name. Type a **Title ID** or **Game Name**, or click **Detect** to read
-  the id from the save and look up the stored game name (Nintendo saves use the
-  Game Name; if neither is available the game goes to `Unknown`). Click **Upload**.
-- **Download** — choose a system, see every game/save with its **name** and title id,
-  and preview the game's **cover icon** when you select a row; download the selected
-  archive.
-- **Edit** — choose a system + game (its name + icon are shown), pick an existing
-  save, browse a replacement, and **Update** it in place (e.g. overwrite `01.zip`
-  instead of adding `02.zip`).
-- **Manage** — choose a system + game, **multi-select** one or more saves, and
-  **Delete Selected** (removes the archive and updates the game index).
-
-Run it with:
-
-```powershell
-dotnet run --project src/SaveHub.WinForms
-```
-
-The desktop app and CLI share the same config file
-(`%APPDATA%\SaveHub\savehub.config.json`), so configuring a provider in one applies
-to the other.
-
-A status bar at the bottom of the window shows the current status text and a
-**progress indicator** that animates whenever an operation is running (loading
-systems/games/saves, downloading, uploading, editing, deleting, signing in, or
-testing a connection).
-
 ## Adding a save for a new / unsupported platform
 
 You do **not** need to pre-create anything. The platform is just a folder name, so
@@ -300,8 +258,6 @@ this priority order:
 - **PS1/PS2:** the serial is read from the card, so it matches the real title id.
 - **PS3+:** include the save's `PARAM.SFO`; the title id (and, as a fallback, the
   game name) is read from it.
-- In the **desktop app**, type the Title ID or Game Name, or click **Detect** to
-  read the id from the save.
 
 ## Cover art
 
@@ -383,7 +339,7 @@ To only build the zip/side-car locally (e.g. for a custom frontend) use
 
 ## Configuration
 
-SaveHub uses **one config file**, shared by the CLI and the desktop app:
+SaveHub uses **one config file**, used by the CLI (and any UI built on the API):
 
 - Location: `%APPDATA%\SaveHub\savehub.config.json` (per-user).
 - Override in the CLI with `--config <path>`.
@@ -412,9 +368,9 @@ each provider's settings so they never land in the config file.
 
 ## Storage providers
 
-SaveHub works with **GitHub**, **Supabase**, or **Google Drive** — the CLI and the
-desktop app are provider-agnostic (they call `SaveHubHost` which builds a client
-from the active provider). Every provider produces the **same folder layout**
+SaveHub works with **GitHub**, **Supabase**, or **Google Drive** — the CLI (and any
+UI built on the API) is provider-agnostic (it calls `SaveHubHost` which builds a
+client from the active provider). Every provider produces the **same folder layout**
 because all artifacts are built in `SaveHub.Core`.
 
 > **Full account/setup walkthroughs** for all three providers are in the
@@ -464,15 +420,11 @@ dotnet run --project src/SaveHub.Cli -- config google-login   # opens the browse
   folder ID needed. Change the name with `--folder-name`.
 - Sign-in opens your browser; SaveHub receives a **session token** used while the
   app runs, valid for **~2.5 hours**, after which you sign in again.
-- In the **desktop app** the token is kept in memory only (session); in the CLI it
-  is cached so subsequent commands don't reprompt.
+- In the CLI the token is cached so subsequent commands don't reprompt.
 - Owners publish directly; others upload to a `pending/` sub-folder.
 
 > Full step-by-step (Google Cloud project, consent screen, Desktop client) is in the
 > [provider setup guide](docs/PROVIDER-SETUP.md#google-drive).
-
-In the **desktop app**, all of this is on the **Settings** tab: pick the provider,
-fill in the fields, and (for Google) click **Sign in with Google**.
 
 ## GitHub token & permissions
 
