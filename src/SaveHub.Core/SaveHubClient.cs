@@ -10,6 +10,8 @@ namespace SaveHub.Core;
 /// </summary>
 public sealed class SaveHubClient
 {
+    private const string LibraryIndexPath = "library.json";
+
     private static readonly string[] EmbeddedIconNames = ["ICON0.PNG"];
 
     private readonly ISaveStorageProvider _provider;
@@ -193,5 +195,48 @@ public sealed class SaveHubClient
             await _provider.UploadFileAsync(readmePath, System.Text.Encoding.UTF8.GetBytes(updated), cancellationToken).ConfigureAwait(false);
         }
         return deleted;
+    }
+
+    /// <summary>Reads the consolidated library index (game names per platform), or an empty index.</summary>
+    public async Task<LibraryIndex> GetLibraryIndexAsync(CancellationToken cancellationToken = default)
+    {
+        byte[]? bytes = await _provider.DownloadFileAsync(LibraryIndexPath, cancellationToken).ConfigureAwait(false);
+        return bytes is null ? new LibraryIndex() : LibraryIndex.Deserialize(bytes);
+    }
+
+    /// <summary>
+    /// Rebuilds the whole library index from every platform's game list and per-platform README
+    /// names, then writes <c>library.json</c> to the backend. One read per platform (never per game).
+    /// </summary>
+    public async Task<LibraryIndex> RebuildLibraryIndexAsync(CancellationToken cancellationToken = default)
+    {
+        LibraryIndex index = new LibraryIndex();
+        foreach (string platform in await ListPlatformsAsync(cancellationToken).ConfigureAwait(false))
+        {
+            IReadOnlyDictionary<string, string> names = await GetGameNamesAsync(platform, cancellationToken).ConfigureAwait(false);
+            foreach (string game in await ListGamesAsync(platform, cancellationToken).ConfigureAwait(false))
+            {
+                index.Set(platform, game, names.TryGetValue(game, out string? name) ? name : game);
+            }
+        }
+        await _provider.UploadFileAsync(LibraryIndexPath, index.Serialize(), cancellationToken).ConfigureAwait(false);
+        return index;
+    }
+
+    /// <summary>
+    /// Sets (or renames) a game's display name in the per-platform README index and the root
+    /// library index. Requires write access to the backend.
+    /// </summary>
+    public async Task SetGameNameAsync(string platform, string gameId, string name, CancellationToken cancellationToken = default)
+    {
+        string readmePath = $"{SaveNaming.Sanitize(platform)}/{PlatformReadmeFormatter.FileName}";
+        byte[]? bytes = await _provider.DownloadFileAsync(readmePath, cancellationToken).ConfigureAwait(false);
+        string existing = bytes is null ? string.Empty : System.Text.Encoding.UTF8.GetString(bytes);
+        string updated = PlatformReadmeFormatter.Upsert(existing, platform, gameId, name);
+        await _provider.UploadFileAsync(readmePath, System.Text.Encoding.UTF8.GetBytes(updated), cancellationToken).ConfigureAwait(false);
+
+        LibraryIndex index = await GetLibraryIndexAsync(cancellationToken).ConfigureAwait(false);
+        index.Set(platform, gameId, string.IsNullOrWhiteSpace(name) ? gameId : name.Trim());
+        await _provider.UploadFileAsync(LibraryIndexPath, index.Serialize(), cancellationToken).ConfigureAwait(false);
     }
 }

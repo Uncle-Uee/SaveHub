@@ -83,6 +83,10 @@ docs/
   `GetGameIconAsync`, and `DeleteSaveAsync` (archive + README row).
   `UploadOptions.TargetIndex` replaces an existing save (edit) instead of appending.
   Providers expose `DownloadFileAsync` / `UploadFileAsync` / `DeleteFileAsync`.
+- `Models/LibraryIndex` + root `library.json` — consolidated `platform → {id → name}`
+  index for reading the whole library in one request. `SaveHubClient.GetLibraryIndexAsync`
+  reads it, `RebuildLibraryIndexAsync` regenerates it from per-platform READMEs, and
+  `SetGameNameAsync` renames a game (updates the platform README + the index).
 
 ### GitHub provider (`SaveHub.GitHub`)
 

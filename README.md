@@ -12,6 +12,11 @@ type, and files — it builds the zip (with an embedded description), maintains 
 per-game and per-platform `README.md` indexes, and submits a pull request
 to your repository.
 
+A consolidated root **`library.json`** index (`platform → {title id → game name}`) lets
+a frontend read every game name in one request. `SaveHubClient.GetLibraryIndexAsync`
+reads it, `RebuildLibraryIndexAsync` regenerates it, and `SetGameNameAsync` renames a
+game (updating the platform README and the index).
+
 > Open source under the **MIT License** — see [LICENSE](LICENSE). Please keep the
 > copyright notice so the author gets credit. If SaveHub is useful to you, please
 > consider supporting it: **https://pay.yoco.com/savehub**.
