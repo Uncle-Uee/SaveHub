@@ -1,6 +1,8 @@
 using SaveHub.Core;
 using SaveHub.Core.Configuration;
+using SaveHub.Bitbucket;
 using SaveHub.GitHub;
+using SaveHub.GitLab;
 using SaveHub.GoogleDrive;
 using SaveHub.Supabase;
 
@@ -15,6 +17,8 @@ public static class SaveHubHost
     public static readonly IReadOnlyList<ProviderDescriptor> Providers =
     [
         new(GitHubProviderFactory.ProviderName, "GitHub"),
+        new(GitLabProviderFactory.ProviderName, "GitLab"),
+        new(BitbucketProviderFactory.ProviderName, "Bitbucket"),
         new(SupabaseProviderFactory.ProviderName, "Supabase"),
         new(GoogleDriveProviderFactory.ProviderName, "Google Drive"),
     ];
@@ -27,6 +31,8 @@ public static class SaveHubHost
         return name switch
         {
             GitHubProviderFactory.ProviderName => new SaveHubClient(GitHubProviderFactory.Create(config)),
+            GitLabProviderFactory.ProviderName => new SaveHubClient(GitLabProviderFactory.Create(config)),
+            BitbucketProviderFactory.ProviderName => new SaveHubClient(BitbucketProviderFactory.Create(config)),
             SupabaseProviderFactory.ProviderName => new SaveHubClient(SupabaseProviderFactory.Create(config)),
             GoogleDriveProviderFactory.ProviderName => new SaveHubClient(GoogleDriveProviderFactory.Create(config)),
             _ => throw new InvalidOperationException(

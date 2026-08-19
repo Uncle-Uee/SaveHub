@@ -12,6 +12,10 @@ app.Configure(config =>
         cfg.SetDescription("Manage SaveHub connections and settings.");
         cfg.AddCommand<ConfigureGitHubCommand>("github")
             .WithDescription("Create or update the GitHub connection.");
+        cfg.AddCommand<ConfigureGitLabCommand>("gitlab")
+            .WithDescription("Create or update the GitLab connection.");
+        cfg.AddCommand<ConfigureBitbucketCommand>("bitbucket")
+            .WithDescription("Create or update the Bitbucket connection.");
         cfg.AddCommand<ConfigureSupabaseCommand>("supabase")
             .WithDescription("Create or update the Supabase connection.");
         cfg.AddCommand<ConfigureGoogleCommand>("google")
@@ -19,7 +23,7 @@ app.Configure(config =>
         cfg.AddCommand<GoogleLoginCommand>("google-login")
             .WithDescription("Sign in to Google Drive via the browser.");
         cfg.AddCommand<UseProviderCommand>("use")
-            .WithDescription("Set the active provider (github | supabase | googledrive).");
+            .WithDescription("Set the active provider (github | gitlab | bitbucket | supabase | googledrive).");
         cfg.AddCommand<ShowConfigCommand>("show")
             .WithDescription("Show the current configuration.");
         cfg.AddCommand<TestConnectionCommand>("test")

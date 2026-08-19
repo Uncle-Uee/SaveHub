@@ -4,8 +4,8 @@
 
 **SaveHub** is a .NET API (with a companion CLI) for backing up emulator and game
 saves — **memory cards**, **save states**, and **PC save-game folders** — to cloud
-storage you control, such as a **GitHub** repository, **Google Drive**, or
-**Supabase**. It packages each save into a versioned archive, keeps a browsable
+storage you control, such as **GitHub**, **GitLab**, **Bitbucket**, **Google Drive**,
+or **Supabase**. It packages each save into a versioned archive, keeps a browsable
 index, and lets you re-download or share your saves from anywhere. Its
 provider-agnostic design means new storage backends (Firebase, S3, ...) can be
 added without changing how you upload.
@@ -13,8 +13,8 @@ added without changing how you upload.
 It works with any emulator/frontend: you give SaveHub the platform, game id, save
 type, and files — it builds the zip (with an embedded description), detects game
 metadata (title ids and cover art where available), maintains the per-game and
-per-platform `README.md` indexes, and publishes the save (via a pull request on
-GitHub).
+per-platform `README.md` indexes, and publishes the save (via a pull/merge request
+on GitHub, GitLab, or Bitbucket).
 
 A consolidated root **`library.json`** index (`platform → {title id → game name}`) lets
 a frontend read every game name in one request. `SaveHubClient.GetLibraryIndexAsync`
@@ -46,6 +46,8 @@ game (updating the platform README and the index).
   - [Configuration](#configuration)
   - [Storage providers](#storage-providers)
     - [GitHub](#github)
+    - [GitLab](#gitlab)
+    - [Bitbucket](#bitbucket)
     - [Supabase](#supabase)
     - [Google Drive (bring your own OAuth client, browser sign-in)](#google-drive-bring-your-own-oauth-client-browser-sign-in)
   - [GitHub token \& permissions](#github-token--permissions)
@@ -377,18 +379,18 @@ each provider's settings so they never land in the config file.
 
 ## Storage providers
 
-SaveHub works with **GitHub**, **Supabase**, or **Google Drive** — the CLI (and any
-UI built on the API) is provider-agnostic (it calls `SaveHubHost` which builds a
-client from the active provider). Every provider produces the **same folder layout**
-because all artifacts are built in `SaveHub.Core`.
+SaveHub works with **GitHub**, **GitLab**, **Bitbucket**, **Supabase**, or **Google
+Drive** — the CLI (and any UI built on the API) is provider-agnostic (it calls
+`SaveHubHost` which builds a client from the active provider). Every provider produces
+the **same folder layout** because all artifacts are built in `SaveHub.Core`.
 
-> **Full account/setup walkthroughs** for all three providers are in the
+> **Full account/setup walkthroughs** are in the
 > [provider setup guide](docs/PROVIDER-SETUP.md).
 
 Switch the active provider any time:
 
 ```powershell
-dotnet run --project src/SaveHub.Cli -- config use github|supabase|googledrive
+dotnet run --project src/SaveHub.Cli -- config use github|gitlab|bitbucket|supabase|googledrive
 ```
 
 ### GitHub
@@ -399,6 +401,33 @@ $env:SAVEHUB_GITHUB_TOKEN = "ghp_xxx"
 ```
 Uploads are pull requests; auto-merge for owners/contributors. See the token
 section below.
+
+### GitLab
+
+Create a project to hold your saves, then a **personal access token** with the
+**`api`** scope (GitLab → *Preferences → Access Tokens*):
+
+```powershell
+dotnet run --project src/SaveHub.Cli -- config gitlab --owner your-name --repo game-saves
+$env:SAVEHUB_GITLAB_TOKEN = "glpat_xxx"
+dotnet run --project src/SaveHub.Cli -- config test
+```
+Uploads are **merge requests**; auto-merge needs **Maintainer** access. Add
+`--base-url https://gitlab.example.com` for a self-hosted instance. Contributors
+without access push to an automatic fork.
+
+### Bitbucket
+
+Create a repository, then an **app password** (Bitbucket → *Personal settings → App
+passwords*) with **Repositories: Read and write** and **Pull requests: Write**:
+
+```powershell
+dotnet run --project src/SaveHub.Cli -- config bitbucket --workspace your-workspace --repo game-saves --username your-name
+$env:SAVEHUB_BITBUCKET_APP_PASSWORD = "xxxxxxxx"
+dotnet run --project src/SaveHub.Cli -- config test
+```
+Uploads are **pull requests**; auto-merge needs write access. Contributors without
+access push to an automatic fork.
 
 ### Supabase
 

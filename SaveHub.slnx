@@ -2,7 +2,9 @@
   <Folder Name="/src/">
     <Project Path="src/SaveHub.Cli/SaveHub.Cli.csproj" />
     <Project Path="src/SaveHub.Core/SaveHub.Core.csproj" />
+    <Project Path="src/SaveHub.Bitbucket/SaveHub.Bitbucket.csproj" />
     <Project Path="src/SaveHub.GitHub/SaveHub.GitHub.csproj" />
+    <Project Path="src/SaveHub.GitLab/SaveHub.GitLab.csproj" />
     <Project Path="src/SaveHub.GoogleDrive/SaveHub.GoogleDrive.csproj" />
     <Project Path="src/SaveHub.Hosting/SaveHub.Hosting.csproj" />
     <Project Path="src/SaveHub.Supabase/SaveHub.Supabase.csproj" />

@@ -3,6 +3,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SaveHub.Core\SaveHub.Core.csproj" />
     <ProjectReference Include="..\SaveHub.GitHub\SaveHub.GitHub.csproj" />
+    <ProjectReference Include="..\SaveHub.GitLab\SaveHub.GitLab.csproj" />
+    <ProjectReference Include="..\SaveHub.Bitbucket\SaveHub.Bitbucket.csproj" />
     <ProjectReference Include="..\SaveHub.Supabase\SaveHub.Supabase.csproj" />
     <ProjectReference Include="..\SaveHub.GoogleDrive\SaveHub.GoogleDrive.csproj" />
   </ItemGroup>

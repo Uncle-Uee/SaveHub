@@ -36,6 +36,8 @@ SaveHub.sln
 src/
   SaveHub.Core/        # models, archive/manifest builder, config, provider abstraction, SaveHubClient
   SaveHub.GitHub/      # GitHub provider (Octokit)
+  SaveHub.GitLab/      # GitLab provider (HttpClient/REST v4)
+  SaveHub.Bitbucket/   # Bitbucket provider (HttpClient/REST 2.0)
   SaveHub.Supabase/    # Supabase Storage provider (HttpClient/REST)
   SaveHub.GoogleDrive/ # Google Drive provider (Google.Apis.Drive.v3 + OAuth)
   SaveHub.Hosting/     # aggregates providers -> SaveHubHost.CreateClient(config)
@@ -100,6 +102,20 @@ docs/
   (blob → tree → commit → branch → PR → optional merge). Non-collaborators get a
   fork automatically.
 - `GitHubProviderFactory` — read/write settings and build the provider.
+
+### GitLab provider (`SaveHub.GitLab`)
+
+- `GitLabProviderSettings` — baseUrl/owner/repo/branch/token(+env)/autoMerge.
+- `GitLabSaveStorageProvider` — browsing + upload via REST v4 (commits API with
+  create/update actions → merge request → optional merge). Non-members get a fork.
+- `GitLabProviderFactory` — read/write settings and build the provider.
+
+### Bitbucket provider (`SaveHub.Bitbucket`)
+
+- `BitbucketProviderSettings` — workspace/repo/branch/username/appPassword(+env)/autoMerge.
+- `BitbucketSaveStorageProvider` — browsing + upload via REST 2.0 (create branch →
+  `POST /src` multi-file commit → pull request → optional merge). Non-members get a fork.
+- `BitbucketProviderFactory` — read/write settings and build the provider.
 
 ### Supabase provider (`SaveHub.Supabase`)
 
@@ -204,7 +220,12 @@ are easy to unit test without network access. Network calls live in providers.
 3. Add a settings class and a factory mirroring `GitHubProviderFactory`.
 4. Reuse `SaveArchiveBuilder`, `SaveManifest`, `SavesIndexFormatter`, `SaveNaming`
    unchanged — only the transport differs.
-5. Register the provider key in `CliContext.CreateClient`.
+5. Register it in `SaveHubHost` (the `Providers` list + `CreateClient` switch) and add
+   the project to `SaveHub.slnx` + `SaveHub.Hosting.csproj`.
+6. For CLI parity add a `config <backend>` command (mirror `ConfigureGitHubCommand`),
+   register it in `Program.cs`, and add the key to `UseProviderCommand`.
+7. For the apps add a Settings panel + `Save<Backend>Settings`/`LoadSettings` wiring in
+   both `MainFormController` (WinForms) and `AppController` (Avalonia).
 
 ## Safety / scope
 
