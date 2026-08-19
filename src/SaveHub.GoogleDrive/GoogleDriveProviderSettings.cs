@@ -3,12 +3,15 @@ namespace SaveHub.GoogleDrive;
 /// <summary>Settings for the Google Drive provider, persisted under the "googledrive" config key.</summary>
 public sealed class GoogleDriveProviderSettings
 {
+    /// <summary>Default folder name created at the Drive root.</summary>
+    public const string DefaultRootFolderName = "EmuSavesBackup";
+
     /// <summary>
     /// Name of the folder SaveHub creates (and reuses) at your Drive root to hold the save database.
     /// With the <c>drive.file</c> scope the app can only see folders it created, so it manages this
     /// folder itself — you do not need to pre-create one or paste a folder id.
     /// </summary>
-    public string RootFolderName { get; set; } = "SaveHub";
+    public string RootFolderName { get; set; } = DefaultRootFolderName;
 
     /// <summary>
     /// Optional advanced override: an explicit folder id to use as the root. Only works when the

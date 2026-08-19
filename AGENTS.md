@@ -1,4 +1,4 @@
-# AGENT.md
+# AGENTS.md
 
 Guidance for AI agents and contributors working in the **SaveHub** repository.
 
@@ -11,8 +11,8 @@ pull request. It is meant to be reusable by any emulator frontend.
 
 ## Roadmap & key decisions
 
-- **License:** MIT (© 2026 Ubaidullah Effendi). Open source; keep the copyright
-  notice for credit. Donations via the FUNDING link.
+- **License:** LGPL-3.0-or-later. Open source; keep the copyright notice in
+  LICENSE. Donations via the FUNDING link.
 - **Two-repo split:** this repo (`SaveHub`) holds the **API libraries + CLI** and
   publishes NuGet packages; a separate `SaveHub.UI` repo holds **WinForms + a
   planned cross-platform Avalonia app** and consumes those packages. WinForms will
@@ -203,8 +203,9 @@ are easy to unit test without network access. Network calls live in providers.
 
 ## Safety / scope
 
-- The project is open source under the MIT License; see `LICENSE`. Keep the
-  copyright notice and donation references intact.
+- The API libraries and CLI are licensed under the GNU LGPL-3.0-or-later; see
+  `LICENSE` and the `Licenses/` folder. Keep the copyright notice and donation
+  references intact.
 - Do not remove the copyright or license notice.
 - Avoid destructive Git operations against user repositories; uploads must go
   through pull requests.

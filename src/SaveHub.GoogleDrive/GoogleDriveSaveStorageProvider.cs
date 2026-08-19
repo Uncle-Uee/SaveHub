@@ -321,10 +321,13 @@ public sealed class GoogleDriveSaveStorageProvider : ISaveStorageProvider
             return _rootId;
         }
 
-        string name = string.IsNullOrWhiteSpace(_settings.RootFolderName) ? "SaveHub" : _settings.RootFolderName;
+        string name = string.IsNullOrWhiteSpace(_settings.RootFolderName) ? GoogleDriveProviderSettings.DefaultRootFolderName : _settings.RootFolderName;
         FilesResource.ListRequest list = _drive.Files.List();
         list.Q = $"name = '{Escape(name)}' and mimeType = '{FolderMime}' and 'root' in parents and trashed = false";
-        list.Fields = "files(id,name)";
+        // Order by creation time and take the oldest so the same folder is always reused
+        // (never creating a second one) even if a duplicate already exists.
+        list.Fields = "files(id,name,createdTime)";
+        list.OrderBy = "createdTime";
         list.PageSize = 10;
         DriveData.FileList response = await list.ExecuteAsync(ct).ConfigureAwait(false);
         _rootId = response.Files.FirstOrDefault()?.Id;
