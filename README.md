@@ -2,15 +2,19 @@
 
 [![Support SaveHub](https://img.shields.io/badge/%E2%9D%A4-Support%20SaveHub-ff5f5f)](https://pay.yoco.com/savehub)
 
-**SaveHub** is a generalized .NET API (with a CLI) for uploading emulator
-**memory cards** and **save states** to an online storage backend so they can be
-shared and re-downloaded. It targets **GitHub** today and is designed so other
-backends (Google Drive, Supabase, Firebase, ...) can be added later.
+**SaveHub** is a .NET API (with a companion CLI) for backing up emulator and game
+saves — **memory cards**, **save states**, and **PC save-game folders** — to cloud
+storage you control, such as a **GitHub** repository, **Google Drive**, or
+**Supabase**. It packages each save into a versioned archive, keeps a browsable
+index, and lets you re-download or share your saves from anywhere. Its
+provider-agnostic design means new storage backends (Firebase, S3, ...) can be
+added without changing how you upload.
 
 It works with any emulator/frontend: you give SaveHub the platform, game id, save
-type, and files — it builds the zip (with an embedded description), maintains the
-per-game and per-platform `README.md` indexes, and submits a pull request
-to your repository.
+type, and files — it builds the zip (with an embedded description), detects game
+metadata (title ids and cover art where available), maintains the per-game and
+per-platform `README.md` indexes, and publishes the save (via a pull request on
+GitHub).
 
 A consolidated root **`library.json`** index (`platform → {title id → game name}`) lets
 a frontend read every game name in one request. `SaveHubClient.GetLibraryIndexAsync`
