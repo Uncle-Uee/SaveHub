@@ -23,6 +23,12 @@ public static class SaveNaming
     /// <summary>File name used for the manifest stored inside every archive.</summary>
     public const string ManifestFileName = "README.txt";
 
+    /// <summary>
+    /// Folder name for a platform's bulk memory-card index. The leading '!' sorts it above the
+    /// title-id folders in file listings.
+    /// </summary>
+    public const string MemoryCardIndexFolderName = "!index";
+
     /// <summary>Normalizes a platform or game id into a safe folder name.</summary>
     public static string Sanitize(string value)
     {
@@ -73,6 +79,12 @@ public static class SaveNaming
     public static string GameFolder(string platform, string gameId)
     {
         return $"{Sanitize(platform)}/{Sanitize(gameId)}";
+    }
+
+    /// <summary>Path to a platform's bulk memory-card index README, e.g. "PS2/!index/README.md".</summary>
+    public static string MemoryCardIndexReadmePath(string platform)
+    {
+        return $"{Sanitize(platform)}/{MemoryCardIndexFolderName}/README.md";
     }
 
     /// <summary>Attempts to parse an archive file name into its index and save type.</summary>

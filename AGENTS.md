@@ -60,6 +60,9 @@ docs/
   (archive, type, description). Replaces the old side-car `.txt`/`saves.txt`.
 - `Archiving/PlatformReadmeFormatter` — upserts the per-platform `README.md` games
   index (title id + game name), created/updated automatically on upload.
+- `Archiving/MemoryCardIndexFormatter` — upserts a platform's bulk memory-card
+  index `README.md` under the top-sorting `!index` folder (`SaveNaming.MemoryCardIndexFolderName`):
+  one row per card with a cover-art thumbnail, game name, and id. Used by bulk uploads.
 - `Archiving/CoverArt` — `CoverArtSource` maps platform+serial to a cover URL;
   `HttpCoverArtResolver` downloads it. PS1/PS2 use `SLUS-#####`; PSP uses `NPEG#####`.
 - `Archiving/PsSerialScanner` — reads the game serial (title id) from a PS1/PS2
@@ -87,6 +90,8 @@ docs/
   index for reading the whole library in one request. `SaveHubClient.GetLibraryIndexAsync`
   reads it, `RebuildLibraryIndexAsync` regenerates it from per-platform READMEs, and
   `SetGameNameAsync` renames a game (updates the platform README + the index).
+- `SaveHubClient.UpdateMemoryCardIndexAsync(platform, entries)` — adds/updates rows in
+  a platform's `!index/README.md` (bulk memory-card catalog); rows merge by id.
 
 ### GitHub provider (`SaveHub.GitHub`)
 

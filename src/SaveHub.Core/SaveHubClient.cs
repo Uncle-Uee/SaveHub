@@ -216,6 +216,11 @@ public sealed class SaveHubClient
             IReadOnlyDictionary<string, string> names = await GetGameNamesAsync(platform, cancellationToken).ConfigureAwait(false);
             foreach (string game in await ListGamesAsync(platform, cancellationToken).ConfigureAwait(false))
             {
+                if (game.StartsWith('!'))
+                {
+                    // Skip the bulk memory-card index folder; it is not a game.
+                    continue;
+                }
                 index.Set(platform, game, names.TryGetValue(game, out string? name) ? name : game);
             }
         }
@@ -238,5 +243,26 @@ public sealed class SaveHubClient
         LibraryIndex index = await GetLibraryIndexAsync(cancellationToken).ConfigureAwait(false);
         index.Set(platform, gameId, string.IsNullOrWhiteSpace(name) ? gameId : name.Trim());
         await _provider.UploadFileAsync(LibraryIndexPath, index.Serialize(), cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Adds or updates rows in a platform's bulk memory-card index (<c>PLATFORM/!index/README.md</c>),
+    /// which catalogs each memory card with its game name, id, and cover art. Existing rows are merged
+    /// by id. Requires write access to the backend.
+    /// </summary>
+    public async Task UpdateMemoryCardIndexAsync(
+        string platform,
+        IReadOnlyList<MemoryCardIndexEntry> entries,
+        CancellationToken cancellationToken = default)
+    {
+        if (entries.Count == 0)
+        {
+            return;
+        }
+        string path = SaveNaming.MemoryCardIndexReadmePath(platform);
+        byte[]? bytes = await _provider.DownloadFileAsync(path, cancellationToken).ConfigureAwait(false);
+        string existing = bytes is null ? string.Empty : System.Text.Encoding.UTF8.GetString(bytes);
+        string updated = MemoryCardIndexFormatter.Upsert(existing, platform, entries);
+        await _provider.UploadFileAsync(path, System.Text.Encoding.UTF8.GetBytes(updated), cancellationToken).ConfigureAwait(false);
     }
 }
