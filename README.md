@@ -57,6 +57,7 @@ game (updating the platform README and the index).
   - [Auto-merge rules](#auto-merge-rules)
   - [Implementing your own provider](#implementing-your-own-provider)
   - [License \& support](#license--support)
+  - [Credits](#credits)
 
 ---
 
@@ -561,5 +562,19 @@ Public License v3 (LGPL-3.0-or-later)** — see [LICENSE](LICENSE). You can refe
 the packages from your own software (including closed-source apps); changes to the
 SaveHub libraries themselves stay under the LGPL.
 
+Third-party libraries SaveHub builds on are credited in [CREDITS.md](CREDITS.md).
+
 If it saves you time, please support development:
 **https://pay.yoco.com/savehub**.
+
+## Credits
+
+SaveHub is built with these open-source projects — thank you to their authors:
+
+- [Octokit.net](https://github.com/octokit/octokit.net) (MIT) — GitHub API client.
+- [Google APIs Client Library for .NET](https://github.com/googleapis/google-api-dotnet-client) (Apache-2.0) — Google Drive access.
+- [Spectre.Console](https://github.com/spectreconsole/spectre.console) (MIT) — the CLI interface.
+- [.NET](https://github.com/dotnet/runtime) (MIT) — runtime and base libraries.
+
+Full attributions and license texts are in [CREDITS.md](CREDITS.md) and
+[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
