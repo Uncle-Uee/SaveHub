@@ -30,3 +30,33 @@ jobs:
           user: ${{ vars.NUGET_USER }}
       - name: Push to NuGet.org
         run: dotnet nuget push "${{ runner.temp }}/nupkg/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  cli:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # upload built CLI binaries to the release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Publish CLI (self-contained, single file)
+        run: |
+          for rid in win-x64 linux-x64 osx-x64; do
+            dotnet publish src/SaveHub.Cli/SaveHub.Cli.csproj -c Release -r "$rid" --self-contained true \
+              -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true \
+              -p:EnableCompressionInSingleFile=true -p:DebugType=none \
+              -o "publish/$rid"
+          done
+      - name: Package
+        run: |
+          for rid in win-x64 linux-x64 osx-x64; do
+            cp LICENSE THIRD-PARTY-NOTICES.txt CREDITS.md "publish/$rid/" || true
+          done
+          ( cd publish/win-x64 && zip -qr "$GITHUB_WORKSPACE/savehub-cli-${GITHUB_REF_NAME}-win-x64.zip" . )
+          tar -czf "savehub-cli-${GITHUB_REF_NAME}-linux-x64.tar.gz" -C publish/linux-x64 .
+          tar -czf "savehub-cli-${GITHUB_REF_NAME}-osx-x64.tar.gz" -C publish/osx-x64 .
+      - name: Attach to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" savehub-cli-*.zip savehub-cli-*.tar.gz --clobber

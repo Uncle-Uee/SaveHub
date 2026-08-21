@@ -30,4 +30,13 @@
 	<PackageOutputPath>$(MSBuildThisFileDirectory)local-feed</PackageOutputPath>
   </PropertyGroup>
 
+  <!-- Each library ships its own README.md as the package readme shown on nuget.org. -->
+  <PropertyGroup Condition="Exists('README.md')">
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('README.md')">
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
 </Project>

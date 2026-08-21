@@ -41,6 +41,7 @@ game (updating the platform README and the index).
     - [Example: a PS1 memory card for *Oddworld: Abe's Oddysee*](#example-a-ps1-memory-card-for-oddworld-abes-oddysee)
   - [Title IDs (game id / folder name)](#title-ids-game-id--folder-name)
   - [Cover art](#cover-art)
+  - [Packages](#packages)
   - [Using the API from your own code](#using-the-api-from-your-own-code)
     - [Key types](#key-types)
   - [Configuration](#configuration)
@@ -296,6 +297,34 @@ Where to find cover art to upload yourself:
 - [ramiabraham/cover-art-collection](https://github.com/ramiabraham/cover-art-collection) — many retro consoles.
 - [Andiweli/HexFlow-Covers (PSP)](https://github.com/Andiweli/HexFlow-Covers/tree/main/Covers/PSP) — PSP covers named by serial (e.g. `NPEG00001.png`).
 - [The Cover Project](https://www.thecoverproject.net/) — high-quality disc/box scans.
+
+## Packages
+
+All seven libraries are published on **NuGet.org**. You don't need to grab all of them —
+NuGet resolves the dependencies automatically. Just pick your entry point:
+
+- **All backends (chosen from config):** install **`SaveHub.Hosting`** — it pulls in
+  `SaveHub.Core` and every provider.
+
+  ```sh
+  dotnet add package SaveHub.Hosting
+  ```
+
+- **A single backend:** install just that provider — it pulls in `SaveHub.Core`.
+
+  ```sh
+  dotnet add package SaveHub.GitHub    # or .GitLab / .Bitbucket / .Supabase / .GoogleDrive
+  ```
+
+| Package | Also pulls in | Use it for |
+| --- | --- | --- |
+| `SaveHub.Core` | — | Models, archiving, `SaveHubClient`, the provider abstraction |
+| `SaveHub.Hosting` | Core + all providers | Config-driven backend selection (`SaveHubHost`) |
+| `SaveHub.GitHub` | Core | GitHub backend |
+| `SaveHub.GitLab` | Core | GitLab backend |
+| `SaveHub.Bitbucket` | Core | Bitbucket backend |
+| `SaveHub.Supabase` | Core | Supabase Storage backend |
+| `SaveHub.GoogleDrive` | Core | Google Drive backend |
 
 ## Using the API from your own code
 
