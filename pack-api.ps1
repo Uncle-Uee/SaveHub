@@ -3,12 +3,12 @@
 	Packs the SaveHub backend "API" libraries into the repo-local NuGet feed.
 
 .DESCRIPTION
-	Builds NuGet packages for the five backend libraries and drops them into
+	Builds NuGet packages for the seven backend libraries and drops them into
 	.\local-feed (configured via Directory.Build.props / nuget.config).
 
-	The five packages are:
-		SaveHub.Core, SaveHub.Hosting, SaveHub.GitHub,
-		SaveHub.Supabase, SaveHub.GoogleDrive
+	The seven packages are:
+		SaveHub.Core, SaveHub.Hosting, SaveHub.GitHub, SaveHub.GitLab,
+		SaveHub.Bitbucket, SaveHub.Supabase, SaveHub.GoogleDrive
 
 	Frontends (WinForms, or any third-party UI) consume these packages via
 	PackageReference instead of ProjectReference.
@@ -35,6 +35,8 @@ $projects = @(
 	"src/SaveHub.Core/SaveHub.Core.csproj",
 	"src/SaveHub.Hosting/SaveHub.Hosting.csproj",
 	"src/SaveHub.GitHub/SaveHub.GitHub.csproj",
+	"src/SaveHub.GitLab/SaveHub.GitLab.csproj",
+	"src/SaveHub.Bitbucket/SaveHub.Bitbucket.csproj",
 	"src/SaveHub.Supabase/SaveHub.Supabase.csproj",
 	"src/SaveHub.GoogleDrive/SaveHub.GoogleDrive.csproj"
 )

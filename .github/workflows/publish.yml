@@ -20,7 +20,7 @@ jobs:
       - name: Pack
         run: |
           VER="${GITHUB_REF_NAME#v}"
-          for p in Core Hosting GitHub Supabase GoogleDrive; do
+          for p in Core Hosting GitHub GitLab Bitbucket Supabase GoogleDrive; do
             dotnet pack "src/SaveHub.$p/SaveHub.$p.csproj" -c Release -p:Version="$VER" -o "${{ runner.temp }}/nupkg"
           done
       - name: NuGet login (Trusted Publishing / OIDC)

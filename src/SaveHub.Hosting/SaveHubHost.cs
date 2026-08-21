@@ -1,4 +1,6 @@
 using SaveHub.Core;
+using SaveHub.Core.Abstractions;
+using SaveHub.Core.Archiving;
 using SaveHub.Core.Configuration;
 using SaveHub.Bitbucket;
 using SaveHub.GitHub;
@@ -26,15 +28,26 @@ public static class SaveHubHost
     /// <summary>Builds a client for the active provider in <paramref name="config"/>.</summary>
     public static SaveHubClient CreateClient(SaveHubConfig config)
     {
+        return CreateClient(config, null);
+    }
+
+    /// <summary>Builds a client for the active provider, using the given cover-art resolver.</summary>
+    public static SaveHubClient CreateClient(SaveHubConfig config, ICoverArtResolver? coverArtResolver)
+    {
         ArgumentNullException.ThrowIfNull(config);
+        return new SaveHubClient(CreateProvider(config), coverArtResolver);
+    }
+
+    private static ISaveStorageProvider CreateProvider(SaveHubConfig config)
+    {
         string name = (config.ActiveProvider ?? string.Empty).Trim().ToLowerInvariant();
         return name switch
         {
-            GitHubProviderFactory.ProviderName => new SaveHubClient(GitHubProviderFactory.Create(config)),
-            GitLabProviderFactory.ProviderName => new SaveHubClient(GitLabProviderFactory.Create(config)),
-            BitbucketProviderFactory.ProviderName => new SaveHubClient(BitbucketProviderFactory.Create(config)),
-            SupabaseProviderFactory.ProviderName => new SaveHubClient(SupabaseProviderFactory.Create(config)),
-            GoogleDriveProviderFactory.ProviderName => new SaveHubClient(GoogleDriveProviderFactory.Create(config)),
+            GitHubProviderFactory.ProviderName => GitHubProviderFactory.Create(config),
+            GitLabProviderFactory.ProviderName => GitLabProviderFactory.Create(config),
+            BitbucketProviderFactory.ProviderName => BitbucketProviderFactory.Create(config),
+            SupabaseProviderFactory.ProviderName => SupabaseProviderFactory.Create(config),
+            GoogleDriveProviderFactory.ProviderName => GoogleDriveProviderFactory.Create(config),
             _ => throw new InvalidOperationException(
                 $"Unknown or unconfigured provider '{config.ActiveProvider}'. Configure one first."),
         };
@@ -43,10 +56,16 @@ public static class SaveHubHost
     /// <summary>Builds a client, or returns null with a reason when it cannot be created.</summary>
     public static SaveHubClient? TryCreateClient(SaveHubConfig config, out string error)
     {
+        return TryCreateClient(config, null, out error);
+    }
+
+    /// <summary>Builds a client with the given cover-art resolver, or returns null with a reason.</summary>
+    public static SaveHubClient? TryCreateClient(SaveHubConfig config, ICoverArtResolver? coverArtResolver, out string error)
+    {
         error = string.Empty;
         try
         {
-            return CreateClient(config);
+            return CreateClient(config, coverArtResolver);
         }
         catch (Exception ex)
         {

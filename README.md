@@ -72,7 +72,8 @@ game (updating the platform README and the index).
 - **Automatic title id**: the game serial is read from PS1/PS2 memory cards; Nintendo
   saves use the file name as the folder. You can always override with `--game`.
 - **Automatic console detection**: PS1 vs PS2 memory cards are recognised from the
-  card image itself, so SaveHub selects the right console for you.
+  card image itself (including wrapped `.gme`/`.vgs`/`.vmp` images), so SaveHub selects
+  the right console for you. PS3+ folder saves are matched from `PARAM.SFO`.
 - **Automatic game name**: the title is read from PS2 (`icon.sys`) / PS1 memory
   cards and from `PARAM.SFO` (`TITLE`) on PS3+, so the Game Name field is
   pre-filled where possible.
@@ -285,6 +286,9 @@ serial and stores it as `icon.jpg`/`icon.png` in the game folder:
   auto-download).
 - Disable the auto-download with `--no-cover-art`.
 - If no cover is found for a serial, the upload still succeeds without an icon.
+- Downloaded covers are cached on disk (keyed by platform + serial via `CoverArtCache`
+  / `CachingCoverArtResolver`) so the same cover is not fetched again; frontends point
+  it at a cache folder and cache user-supplied covers there too.
 
 Where to find cover art to upload yourself:
 
@@ -345,6 +349,8 @@ To only build the zip/side-car locally (e.g. for a custom frontend) use
 - `SaveUploadRequest` — platform, game id, save type, files, description, icon,
   emulator, notes.
 - `ISaveStorageProvider` — the backend abstraction.
+- `ICoverArtResolver` / `HttpCoverArtResolver` / `CachingCoverArtResolver` /
+  `CoverArtCache` — cover-art lookup, download, and on-disk caching.
 - `SaveArchiveBuilder` / `SaveManifest` / `SaveNaming` — archive layout and naming.
 - `SaveHubConfig` / `SaveHubConfigStore` — JSON configuration.
 

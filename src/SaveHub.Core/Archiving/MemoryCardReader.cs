@@ -11,6 +11,8 @@ public static partial class MemoryCardReader
 {
     private static readonly Encoding ShiftJis;
     private static readonly byte[] Ps2Magic = Encoding.ASCII.GetBytes("Sony PS2 Memory Card Format");
+    private static readonly byte[] GmeMagic = Encoding.ASCII.GetBytes("123-456-STD");
+    private static readonly byte[] VgsMagic = Encoding.ASCII.GetBytes("VgsM");
 
     static MemoryCardReader()
     {
@@ -24,19 +26,65 @@ public static partial class MemoryCardReader
     /// <summary>Detects the console a memory-card image belongs to: "PS1", "PS2", or null.</summary>
     public static string? DetectPlatform(byte[] data)
     {
-        if (data is null || data.Length < 2)
+        if (data is null || data.Length < 4)
         {
             return null;
         }
-        if (data.Length >= Ps2Magic.Length && data.AsSpan(0, Ps2Magic.Length).SequenceEqual(Ps2Magic))
+        // PS2 raw image: the format magic sits at the very start.
+        if (StartsWith(data, 0, Ps2Magic))
         {
             return "PS2";
         }
-        if (data[0] == (byte)'M' && data[1] == (byte)'C' && data.Length == 131072)
+        // DexDrive (.gme) and Connectix VGS (.vgs) wrap a PS1 card behind a fixed header.
+        if (StartsWith(data, 0, GmeMagic) || StartsWith(data, 0, VgsMagic))
         {
             return "PS1";
         }
+        // PSP/PS3 virtual card (.vmp/.mcs): 128-byte header, then a raw PS1 card ("MC").
+        if (data.Length >= 0x82 && data[0x80] == (byte)'M' && data[0x81] == (byte)'C')
+        {
+            return "PS1";
+        }
+        // Raw PS1 card: "MC" magic; standard image is 128 KB (larger multi-block images exist).
+        if (data.Length >= 131072 && data[0] == (byte)'M' && data[1] == (byte)'C')
+        {
+            return "PS1";
+        }
+        // Some tools prepend a short header to a PS2 image; scan the first block for the magic.
+        if (IndexOf(data, Ps2Magic, 1024) >= 0)
+        {
+            return "PS2";
+        }
         return null;
+    }
+
+    private static bool StartsWith(byte[] data, int offset, byte[] pattern)
+    {
+        if (offset < 0 || offset + pattern.Length > data.Length)
+        {
+            return false;
+        }
+        for (int i = 0; i < pattern.Length; i++)
+        {
+            if (data[offset + i] != pattern[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static int IndexOf(byte[] data, byte[] pattern, int limit)
+    {
+        int end = Math.Min(limit, data.Length - pattern.Length);
+        for (int i = 0; i <= end; i++)
+        {
+            if (StartsWith(data, i, pattern))
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static string? DetectPlatformFromFile(string path)

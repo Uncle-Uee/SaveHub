@@ -280,9 +280,11 @@ Target framework: **.NET 8+** (repo uses .NET 10). Assemblies:
 | `SaveHub.Core` | `SaveHubClient`, `SaveHubInfo` |
 | `SaveHub.Core.Models` | `SaveType`, `KnownPlatforms`, `SaveUploadRequest`, `SaveEntry` |
 | `SaveHub.Core.Abstractions` | `ISaveStorageProvider`, `StorageProviderCapabilities`, `UploadOptions`, `SaveUploadResult`, `ConnectionTestResult` |
-| `SaveHub.Core.Archiving` | `SaveNaming`, `StorageFile`, `PreparedSave`, `SaveArchiveBuilder`, `SaveManifest`, `GameReadmeFormatter`, `PlatformReadmeFormatter`, `CoverArt`, `CoverArtSource`, `ICoverArtResolver`, `HttpCoverArtResolver`, `PsSerialScanner`, `ParamSfoReader`, `MemoryCardReader`, `SaveNameExtractor`, `GameIdResolver`, `GameIdResolution` |
+| `SaveHub.Core.Archiving` | `SaveNaming`, `StorageFile`, `PreparedSave`, `SaveArchiveBuilder`, `SaveManifest`, `GameReadmeFormatter`, `PlatformReadmeFormatter`, `CoverArt`, `CoverArtSource`, `ICoverArtResolver`, `HttpCoverArtResolver`, `CachingCoverArtResolver`, `CoverArtCache`, `PsSerialScanner`, `ParamSfoReader`, `MemoryCardReader`, `SaveNameExtractor`, `GameIdResolver`, `GameIdResolution` |
 | `SaveHub.Core.Configuration` | `SaveHubConfig`, `SaveHubConfigStore` |
 | `SaveHub.GitHub` | `GitHubProviderSettings`, `GitHubSaveStorageProvider`, `GitHubProviderFactory` |
+| `SaveHub.GitLab` | `GitLabProviderSettings`, `GitLabSaveStorageProvider`, `GitLabProviderFactory` |
+| `SaveHub.Bitbucket` | `BitbucketProviderSettings`, `BitbucketSaveStorageProvider`, `BitbucketProviderFactory` |
 | `SaveHub.Supabase` | `SupabaseProviderSettings`, `SupabaseSaveStorageProvider`, `SupabaseProviderFactory` |
 | `SaveHub.GoogleDrive` | `GoogleDriveProviderSettings`, `GoogleDriveSaveStorageProvider`, `GoogleDriveProviderFactory`, `GoogleDriveAuthenticator`, `GoogleDriveSession` |
 | `SaveHub.Hosting` | `SaveHubHost`, `ProviderDescriptor` |
@@ -506,6 +508,20 @@ public interface ICoverArtResolver
 }
 public sealed class HttpCoverArtResolver : ICoverArtResolver { public HttpCoverArtResolver(HttpClient? http = null); }
 
+public sealed class CachingCoverArtResolver : ICoverArtResolver
+{
+    public CachingCoverArtResolver(ICoverArtResolver inner, CoverArtCache cache);
+}
+
+public sealed class CoverArtCache
+{
+    public CoverArtCache(string rootDirectory);
+    public string RootDirectory { get; }
+    public string? FindCachedPath(string platform, string serial);
+    public byte[]? TryRead(string platform, string serial);
+    public void Store(string platform, string serial, byte[] content, string extension);
+}
+
 public static class PsSerialScanner
 {
     public static string? Scan(byte[] data);
@@ -524,7 +540,7 @@ public static class ParamSfoReader
 
 public static class MemoryCardReader
 {
-    public static string? DetectPlatform(byte[] data);          // "PS1", "PS2", or null
+    public static string? DetectPlatform(byte[] data);          // "PS1", "PS2" (raw or wrapped .gme/.vgs/.vmp), or null
     public static string? DetectPlatformFromFile(string path);
     public static string? ReadGameName(string? platform, byte[] data);
     public static string? ReadGameNameFromFile(string? platform, string path);
@@ -672,9 +688,11 @@ public readonly record struct ProviderDescriptor(string Name, string DisplayName
 
 public static class SaveHubHost
 {
-    public static readonly IReadOnlyList<ProviderDescriptor> Providers; // github, supabase, googledrive
+    public static readonly IReadOnlyList<ProviderDescriptor> Providers; // github, gitlab, bitbucket, supabase, googledrive
     public static SaveHubClient CreateClient(SaveHubConfig config);      // switch on ActiveProvider
+    public static SaveHubClient CreateClient(SaveHubConfig config, ICoverArtResolver? coverArtResolver);
     public static SaveHubClient? TryCreateClient(SaveHubConfig config, out string error);
+    public static SaveHubClient? TryCreateClient(SaveHubConfig config, ICoverArtResolver? coverArtResolver, out string error);
 }
 ```
 

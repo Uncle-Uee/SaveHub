@@ -67,12 +67,17 @@ docs/
   one row per card with a cover-art thumbnail, game name, and id. Used by bulk uploads.
 - `Archiving/CoverArt` — `CoverArtSource` maps platform+serial to a cover URL;
   `HttpCoverArtResolver` downloads it. PS1/PS2 use `SLUS-#####`; PSP uses `NPEG#####`.
+  `CachingCoverArtResolver` wraps a resolver and caches downloads on disk (keyed by
+  platform+serial) so covers are not re-fetched; the apps enable it via a cache folder.
+  `CoverArtCache` is the on-disk store (find/read/store) shared by the resolver and the apps
+  (to preview cached covers and to persist user-supplied cover art).
 - `Archiving/PsSerialScanner` — reads the game serial (title id) from a PS1/PS2
   memory-card image by scanning for the stored serial strings.
 - `Archiving/ParamSfoReader` — parses `PARAM.SFO` (PS3/PS4/PS5/PSP/Vita) and returns
   its `TITLE_ID`/`DISC_ID` (`TitleIdFromFiles`) or game name `TITLE` (`GameNameFromFiles`).
 - `Archiving/MemoryCardReader` — detects the console from a memory-card image
-  (`DetectPlatform` → `PS1`/`PS2`) and reads the stored game/save title
+  (`DetectPlatform` → `PS1`/`PS2`, covering raw plus wrapped `.gme`/`.vgs`/`.vmp` images) and
+  reads the stored game/save title
   (Shift-JIS code page 932, full-width normalised).
 - `Archiving/SaveNameExtractor` — best-effort game name: `PARAM.SFO` `TITLE` first,
   then a PS1/PS2 memory-card title.
@@ -140,7 +145,8 @@ docs/
 ### Hosting (`SaveHub.Hosting`)
 
 - `SaveHubHost.CreateClient(config)` / `TryCreateClient` — switches on
-  `config.ActiveProvider` and builds the right provider. Both frontends use this so
+  `config.ActiveProvider` and builds the right provider. Overloads take an optional
+  `ICoverArtResolver` (the apps pass a `CachingCoverArtResolver`). Both frontends use this so
   they depend only on Core + Hosting, never on a specific provider.
 
 ### Desktop app (`SaveHub.WinForms`)

@@ -3,7 +3,7 @@
   <!--
 	Shared build + packaging metadata for the SaveHub solution.
 
-	The backend "API" libraries (Core, Hosting, GitHub, Supabase, GoogleDrive)
+	The backend "API" libraries (Core, Hosting, GitHub, GitLab, Bitbucket, Supabase, GoogleDrive)
 	are packed into the local NuGet feed at ./local-feed so that frontends
 	(WinForms, or any third-party UI) can consume them as NuGet packages
 	instead of ProjectReferences.
@@ -20,6 +20,8 @@
 	<Authors>SaveHub</Authors>
 	<Company>SaveHub</Company>
 	<Product>SaveHub</Product>
+	<Description>SaveHub — back up emulator and game saves (memory cards, save states, and save folders) to cloud storage you control. Part of the SaveHub API.</Description>
+	<PackageTags>savehub;game-saves;emulator;memory-card;save-state;backup</PackageTags>
 	<PackageProjectUrl>https://github.com/uncle-uee/SaveHub</PackageProjectUrl>
 	<RepositoryUrl>https://github.com/uncle-uee/SaveHub</RepositoryUrl>
 	<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>

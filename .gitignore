@@ -2,6 +2,11 @@
 bin/
 obj/
 
+# Packed NuGet packages / local dev feed
+local-feed/
+*.nupkg
+*.snupkg
+
 # Rider / VS
 .vs/
 .idea/
