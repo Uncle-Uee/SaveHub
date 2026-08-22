@@ -13,6 +13,15 @@ dotnet run --project src/SaveHub.Cli -- config test
 
 The desktop app has the same options on its **Settings** tab.
 
+> **Private repositories?** Every Git backend works with a private repo — you just
+> need a credential that can see and write to it:
+> - **GitHub:** a classic token with the `repo` scope, or a fine-grained token with
+>   **Contents** and **Pull requests** = *Read and write* on that repo.
+> - **GitLab:** a personal access token with the `api` scope (role *Developer* or
+>   above; *Maintainer* to auto-merge).
+> - **Bitbucket:** an app password with **Repositories** (Read, Write) and
+>   **Pull requests** (Read, Write).
+
 ---
 
 ## GitHub
